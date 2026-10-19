@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="id">
+<head><link rel="icon" type="image/x-icon" href="logo-richard-icon.png">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SG Richard Dashboard</title>
+<!-- Tanpa JavaScript: semua orang ke halaman login website. -->
+<noscript><meta http-equiv="refresh" content="0; url=login/" /></noscript>
+<script>
+  // Pengalihan otomatis dari alamat utama:
+  //   HP (iPhone / Android HP)         -> app/    (aplikasi mobile)
+  //   laptop, PC, tablet, iPad, lainnya -> login/  (website)
+  //   ?web=1                            -> login/  (paksa website, mis. admin yang butuh fitur lengkap dari HP)
+  (function () {
+    var target = "login/";
+    var forceWeb = /(^|[?&])web=1(&|$)/.test(window.location.search);
+    // "Android" + "Mobile" = HP Android (tablet Android tidak memuat kata "Mobile"). iPad tidak termasuk iPhone/iPod.
+    var isPhone = /iPhone|iPod|Android.+Mobile|Windows Phone/i.test(navigator.userAgent || "");
+    if (isPhone && !forceWeb) target = "app/";
+    window.location.replace(target);
+  })();
+</script>
+</head>
+<body>
+  <p>Mengarahkan... Kalau tidak otomatis pindah, buka <a href="login/">website</a> atau <a href="app/">aplikasi mobile</a>.</p>
+</body>
+</html>

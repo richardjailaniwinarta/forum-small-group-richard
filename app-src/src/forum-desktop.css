@@ -1,0 +1,39 @@
+/* Halaman forum di website laptop. Komponen forum memakai forum.css; file ini hanya kerangka halamannya. */
+body {
+  background:
+    radial-gradient(ellipse 800px 420px at 12% 0%, rgba(108, 99, 255, 0.20), transparent 60%),
+    radial-gradient(ellipse 700px 400px at 95% 100%, rgba(247, 183, 51, 0.09), transparent 55%),
+    #080b12;
+  background-attachment: fixed;
+}
+.desk { --safe-top: 0px; --safe-bottom: 0px; min-height: 100vh; }
+.desk-loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--muted); font-size: 14px; }
+.desk-loading .spinner { border-color: rgba(167, 139, 250, 0.3); border-top-color: var(--violet); }
+.desk-nav { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; padding: 12px 32px; border-bottom: 1px solid var(--line); background: rgba(15, 20, 32, 0.92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.desk-brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 700; font-size: 16px; white-space: nowrap; }
+.desk-brand:hover { color: var(--text); }
+.desk-logo { width: 40px; height: 40px; flex: none; box-sizing: border-box; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line-2); padding: 5px; }
+.desk-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.desk-links { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; }
+.desk-links a { padding: 9px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--muted); text-decoration: none; white-space: nowrap; }
+.desk-links a:hover { color: var(--text); background: rgba(255, 255, 255, 0.04); }
+.desk-links a.on { color: #c4b5fd; background: rgba(108, 99, 255, 0.18); font-weight: 700; }
+.desk-user { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.desk-avatar { width: 30px; height: 30px; flex: none; border-radius: 50%; background: var(--purple); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--syne); font-weight: 700; font-size: 11px; }
+.desk-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+.desk-logout { height: 36px; padding: 0 14px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line-2); font-size: 13px; font-weight: 700; cursor: pointer; }
+.desk-logout:hover { border-color: rgba(248, 113, 113, 0.6); color: var(--red); }
+.desk-main { max-width: 1120px; margin: 0 auto; padding: 32px 24px 64px; }
+
+/* Panel konfirmasi & tindakan: di tengah layar, bukan dari bawah. */
+.desk .sheet-backdrop { position: fixed; z-index: 50; justify-content: center; align-items: center; }
+.desk .sheet-backdrop > div:first-child { position: absolute; inset: 0; }
+.desk .sheet { position: relative; width: min(480px, calc(100vw - 32px)); border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.12); padding-bottom: 24px; }
+.desk .f-lightbox { position: fixed; z-index: 60; }
+.desk .toast { position: fixed; left: auto; right: 24px; bottom: 24px; max-width: 420px; z-index: 70; }
+
+@media (max-width: 640px) {
+  .desk-nav { padding: 12px 16px; }
+  .desk-main { padding: 20px 16px 48px; }
+  .desk .toast { left: 16px; right: 16px; }
+}

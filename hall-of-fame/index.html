@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="id">
+<head><link rel="icon" type="image/x-icon" href="../logo-richard-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hall of Fame</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1: #3d0d29;
+    --bg-2: #6e1846;
+    --bg-3: #8a2159;
+    --gold: #f7b733;
+    --gold-deep: #d99110;
+    --teal: #2fd0a3;
+    --teal-deep: #16a17b;
+    --orange: #ff8a3d;
+    --cream: #fdf3ea;
+    --cream-dim: #e9c9d8;
+    --ink: #2a0d1c;
+    --card-bg: rgba(255,255,255,0.06);
+    --card-border: rgba(255,255,255,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter', sans-serif;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -5%, rgba(255,138,61,0.25), transparent 60%),
+      radial-gradient(ellipse 900px 600px at 85% 10%, rgba(47,208,163,0.18), transparent 55%),
+      linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 55%, var(--bg-3) 100%);
+    background-attachment:fixed;
+    color:var(--cream);
+    min-height:100vh;
+    padding:0 0 80px 0;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  .trails{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.5;}
+
+  .wrap{position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:0 28px;}
+
+  header{
+    text-align:center;
+    padding:56px 20px 34px;
+  }
+  .brand{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size:15px;
+    letter-spacing:0.14em;
+    color:var(--cream-dim);
+    text-transform:uppercase;
+    opacity:0.75;
+    margin-bottom:6px;
+  }
+  .brand .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);}
+  h1{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size:clamp(32px, 5vw, 54px);
+    margin:6px 0 10px;
+    line-height:1.05;
+    background:linear-gradient(90deg, var(--gold) 0%, #ffd979 45%, var(--orange) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .subtitle{
+    font-size:16px;
+    color:var(--cream-dim);
+    max-width:520px;
+    margin:0 auto;
+    line-height:1.6;
+  }
+
+  .stat-row{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-top:28px;
+  }
+  .stat-pill{
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    backdrop-filter:blur(6px);
+    padding:10px 20px;
+    border-radius:999px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    font-size:14px;
+    font-weight:600;
+  }
+  .stat-pill .num{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size:18px;
+  }
+  .stat-pill.gold .num{color:var(--gold);}
+  .stat-pill.teal .num{color:var(--teal);}
+
+  .admin-picker-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-top:18px;
+    padding:10px 16px;
+    background:rgba(247,183,51,0.1);
+    border:1px solid rgba(247,183,51,0.35);
+    border-radius:12px;
+    max-width:340px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .admin-picker-row label{
+    font-size:13px;
+    font-weight:700;
+    color:var(--gold);
+    white-space:nowrap;
+  }
+  .admin-picker-row select{
+    background:var(--ink);
+    color:var(--cream);
+    border:1px solid rgba(247,183,51,0.4);
+    border-radius:8px;
+    padding:6px 10px;
+    font-family:'Inter', sans-serif;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  section{margin-top:54px;}
+
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+    border-bottom:1px solid var(--card-border);
+    padding-bottom:16px;
+  }
+  .section-title{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:24px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .section-title .badge{
+    font-size:12px;
+    font-weight:800;
+    padding:4px 10px;
+    border-radius:999px;
+    letter-spacing:0.04em;
+  }
+  .badge.gold{background:rgba(247,183,51,0.18); color:var(--gold); border:1px solid rgba(247,183,51,0.4);}
+  .badge.teal{background:rgba(47,208,163,0.16); color:var(--teal); border:1px solid rgba(47,208,163,0.4);}
+  .section-note{font-size:13px; color:var(--cream-dim); max-width:340px; text-align:right;}
+
+  .full-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+    gap:16px;
+  }
+  .full-card{
+    position:relative;
+    background:linear-gradient(160deg, rgba(247,183,51,0.14), rgba(255,255,255,0.04));
+    border:1px solid rgba(247,183,51,0.35);
+    border-radius:16px;
+    padding:20px 18px 18px;
+    overflow:hidden;
+    transition:transform 0.18s ease, border-color 0.18s ease;
+  }
+  .full-card:hover{transform:translateY(-3px); border-color:rgba(247,183,51,0.7);}
+  .full-card::before{
+    content:"";
+    position:absolute; top:-30px; right:-30px;
+    width:90px; height:90px;
+    background:radial-gradient(circle, rgba(247,183,51,0.35), transparent 70%);
+  }
+  .full-card .trophy{
+    font-size:22px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:38px; height:38px;
+    border-radius:10px;
+    background:rgba(247,183,51,0.2);
+    margin-bottom:14px;
+  }
+  .full-card .name{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:17px;
+    color:var(--cream);
+    margin-bottom:6px;
+    line-height:1.25;
+  }
+  .full-card .track{
+    font-size:12px;
+    color:var(--cream-dim);
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    margin-bottom:14px;
+  }
+  .full-card .score-row{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    border-top:1px dashed rgba(247,183,51,0.3);
+    padding-top:12px;
+  }
+  .full-card .score{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size:22px;
+    color:var(--gold);
+  }
+  .full-card .score-label{font-size:10px; color:var(--cream-dim); text-transform:uppercase; letter-spacing:0.06em;}
+
+  .dl-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    margin-top:14px;
+    width:100%;
+    padding:9px 12px;
+    border-radius:10px;
+    border:1px solid rgba(247,183,51,0.45);
+    background:rgba(247,183,51,0.12);
+    color:var(--gold);
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    text-decoration:none;
+    cursor:pointer;
+    transition:background 0.15s ease, transform 0.15s ease;
+  }
+  .dl-btn:hover{background:rgba(247,183,51,0.24); transform:translateY(-1px);}
+  .dl-btn svg{width:13px; height:13px; flex-shrink:0;}
+
+  .my-download-wrap{
+    display:flex;
+    justify-content:center;
+    margin-top:20px;
+  }
+  .my-dl-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:12px 26px;
+    border-radius:999px;
+    border:1px solid rgba(247,183,51,0.5);
+    background:linear-gradient(90deg, rgba(247,183,51,0.22), rgba(255,138,61,0.18));
+    color:var(--gold);
+    font-family:'Inter', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    text-decoration:none;
+    cursor:pointer;
+    transition:background 0.15s ease, transform 0.15s ease;
+  }
+  .my-dl-btn:hover{background:linear-gradient(90deg, rgba(247,183,51,0.32), rgba(255,138,61,0.28)); transform:translateY(-1px);}
+  .my-dl-btn svg{width:15px; height:15px; flex-shrink:0;}
+
+  .my-dl-checking{
+    font-size:13px;
+    color:var(--cream-dim);
+    padding:10px 18px;
+  }
+  .my-dl-missing{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:11px 22px;
+    border-radius:999px;
+    border:1px solid rgba(255,138,61,0.45);
+    background:rgba(255,138,61,0.1);
+    color:var(--orange);
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:13px;
+    text-align:center;
+  }
+  .my-dl-missing svg{width:15px; height:15px; flex-shrink:0;}
+
+  .dl-btn-sm{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    padding:6px 12px;
+    border-radius:999px;
+    border:1px solid rgba(47,208,163,0.4);
+    background:rgba(47,208,163,0.12);
+    color:var(--teal);
+    font-family:'Inter', sans-serif;
+    font-weight:700;
+    font-size:11px;
+    text-decoration:none;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background 0.15s ease, transform 0.15s ease;
+  }
+  .dl-btn-sm:hover{background:rgba(47,208,163,0.24); transform:translateY(-1px);}
+  .dl-btn-sm svg{width:11px; height:11px; flex-shrink:0;}
+
+  .full-card.admin-clickable, .comp-row.admin-clickable{cursor:pointer;}
+  .full-card.admin-clickable:hover, .comp-row.admin-clickable:hover{border-color:rgba(247,183,51,0.8);}
+  .admin-dl-slot{margin-top:12px;}
+  .admin-dl-slot:empty{margin-top:0;}
+  .admin-dl-checking{font-size:11.5px; color:var(--cream-dim); padding:6px 0; text-align:center;}
+  .admin-dl-missing{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    padding:8px 10px; border-radius:10px;
+    border:1px solid rgba(255,138,61,0.45);
+    background:rgba(255,138,61,0.1);
+    color:var(--orange);
+    font-size:11.5px; font-weight:600; text-align:center;
+  }
+  .admin-dl-missing svg{width:13px; height:13px; flex-shrink:0;}
+  .comp-row .admin-dl-slot{grid-column:1/-1;}
+
+  .comp-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .comp-row{
+    display:grid;
+    grid-template-columns:36px 1fr auto auto;
+    align-items:center;
+    gap:16px;
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:12px;
+    padding:13px 18px;
+  }
+  .comp-rank{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    color:var(--cream-dim);
+  }
+  .comp-name{
+    font-weight:600;
+    font-size:15px;
+    color:var(--cream);
+  }
+  .comp-track{
+    font-size:11px;
+    color:var(--cream-dim);
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    background:rgba(255,255,255,0.06);
+    padding:4px 10px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .comp-meta{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-self:end;
+  }
+  .comp-score{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:16px;
+    color:var(--teal);
+  }
+  .comp-check{
+    font-size:11px;
+    font-weight:700;
+    color:var(--teal);
+    background:rgba(47,208,163,0.14);
+    border:1px solid rgba(47,208,163,0.35);
+    padding:4px 9px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+
+  .full-card.admin-viewing-highlight, .comp-row.admin-viewing-highlight{
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(247,183,51,0.5), 0 0 24px rgba(247,183,51,0.35);
+    animation: adminViewPulse 1.6s ease-in-out 2;
+  }
+  @keyframes adminViewPulse{
+    0%, 100% { box-shadow: 0 0 0 2px rgba(247,183,51,0.5), 0 0 24px rgba(247,183,51,0.35); }
+    50%      { box-shadow: 0 0 0 3px rgba(247,183,51,0.8), 0 0 34px rgba(247,183,51,0.55); }
+  }
+
+  .admin-viewing-banner{
+    display:none;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    text-align:center;
+    margin-top:18px;
+    padding:11px 18px;
+    background:rgba(247,183,51,0.12);
+    border:1px solid rgba(247,183,51,0.4);
+    border-radius:12px;
+    font-size:13.5px;
+    color:var(--cream);
+    max-width:640px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .admin-viewing-banner a{ color:var(--gold); font-weight:700; text-decoration:underline; cursor:pointer; }
+
+  .back-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    margin-top:24px;
+    padding:9px 16px;
+    border-radius:999px;
+    border:1px solid var(--card-border);
+    background:var(--card-bg);
+    backdrop-filter:blur(6px);
+    color:var(--cream);
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:13px;
+    text-decoration:none;
+    cursor:pointer;
+    transition:background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+  .back-btn:hover{background:rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.25); transform:translateY(-1px);}
+  .back-btn svg{width:14px; height:14px; flex-shrink:0;}
+
+  .state-msg{
+    text-align:center;
+    padding:30px 20px;
+    color:var(--cream-dim);
+    font-size:14px;
+  }
+  .full-grid .state-msg{
+    grid-column:1 / -1;
+  }
+
+  footer{
+    text-align:center;
+    margin-top:60px;
+    font-size:12px;
+    color:var(--cream-dim);
+    opacity:0.6;
+  }
+
+  @media (max-width:640px){
+    .wrap{padding:0 16px;}
+    header{padding:40px 16px 24px;}
+    .stat-row{gap:10px;}
+    .stat-pill{padding:8px 14px; font-size:13px;}
+
+    section{margin-top:40px;}
+    .section-head{margin-bottom:16px; padding-bottom:12px;}
+    .section-title{font-size:19px;}
+    .section-note{display:none;}
+
+    .full-grid{grid-template-columns:1fr; gap:12px;}
+    .full-card{padding:16px 16px 14px;}
+
+    .comp-row{grid-template-columns:28px 1fr; row-gap:8px; padding:14px 16px;}
+    .comp-track{grid-column:2/3;}
+    .comp-meta{grid-column:1/3; justify-self:start; width:100%; justify-content:space-between;}
+  }
+</style>
+</head>
+<body>
+
+<svg class="trails" viewBox="0 0 1200 900" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M -50 60 C 250 60, 300 260, 560 300" stroke="var(--orange)" stroke-width="4" fill="none" opacity="0.35"/>
+  <path d="M 520 -30 C 480 150, 560 220, 610 300" stroke="#ffffff" stroke-width="3" fill="none" opacity="0.2"/>
+  <path d="M 760 -30 C 800 160, 760 260, 700 380" stroke="var(--teal)" stroke-width="4" fill="none" opacity="0.3"/>
+</svg>
+
+<div class="wrap">
+  <a class="back-btn" href="../forum/">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+    Kembali ke Forum
+  </a>
+  <header>
+    <div class="brand" id="batchBrand"><span class="dot"></span> BATCH — · PERFORMANCE RECAP</div>
+    <h1>Hall of Fame</h1>
+    <p class="subtitle" id="batchSubtitle">Daftar student dengan pencapaian terbaik</p>
+    <div class="stat-row">
+      <div class="stat-pill gold"><span class="num" id="fullCount">–</span> Full Score</div>
+      <div class="stat-pill teal"><span class="num" id="compCount">–</span> Completion 100%</div>
+    </div>
+
+    <div class="my-download-wrap" id="myDownloadWrap" style="display:none;"></div>
+
+    <div class="admin-viewing-banner" id="adminViewingBanner"></div>
+
+    <div class="admin-picker-row" id="adminPickerRow" style="display:none;">
+      <label for="adminBatchPicker">🛡️ Admin — Lihat Batch:</label>
+      <select id="adminBatchPicker"></select>
+    </div>
+  </header>
+
+  <section>
+    <div class="section-head">
+      <div class="section-title"><span class="badge gold">TOP</span> Full Score</div>
+      <div class="section-note">Student yang menyelesaikan seluruh Task dengan nilai Sempurna.</div>
+    </div>
+    <div class="full-grid" id="fullGrid"><div class="state-msg">Memuat data…</div></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div class="section-title"><span class="badge teal">100%</span> Completion Rate</div>
+      <div class="section-note">Menyelesaikan semua Task, namun Belum Berhasil Full Score.</div>
+    </div>
+    <div class="comp-list" id="compList"></div>
+  </section>
+
+  <footer id="batchFooter">Made by Richard J Winarta &middot; Hall of Fame</footer>
+</div>
+
+<script src="../shared/auth.js"></script>
+<script>
+(function(){
+
+  var TESTIMONIAL_FOLDER = 'testimonials';
+
+  var currentSession = null;
+  var lastLoadedBatchKey = null;
+  var adminViewingHandled = false;
+
+  // ============ SECURE DATA LAYER (Worker backend) ============
+  var WORKER_BASE = "https://sgr-backend.richweinz27.workers.dev";
+  var AUTH_TOKEN = null;
+
+  function getStoredToken() {
+    try {
+      return sessionStorage.getItem("token") || localStorage.getItem("token") || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function apiGet(path) {
+    var token = AUTH_TOKEN || getStoredToken();
+    return fetch(WORKER_BASE + path, { headers: { Authorization: "Bearer " + token } })
+      .then(function (res) {
+        return res.json().catch(function(){ throw new Error("Respon server tidak valid"); }).then(function (data) {
+          if (!res.ok || data.error) throw new Error(data.error || "Gagal memuat data");
+          return data;
+        });
+      });
+  }
+
+  function slugify(name){
+    return String(name)
+      .toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
+  }
+
+  function testimonialPath(name){
+    return TESTIMONIAL_FOLDER + '/' + slugify(name) + '.png';
+  }
+
+  var downloadIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>';
+  var missingIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>';
+
+  function render(data){
+    var fullScore = moveMyCardToFront((data.fullScore || []).slice());
+    var completedNotFull = data.completed || [];
+
+    document.getElementById('fullCount').textContent = fullScore.length;
+    document.getElementById('compCount').textContent = completedNotFull.length;
+
+    var fullGrid = document.getElementById('fullGrid');
+    fullGrid.innerHTML = '';
+    if (fullScore.length === 0){
+      fullGrid.innerHTML = '<div class="state-msg">Belum ada student dengan Full Score.</div>';
+    }
+    fullScore.forEach(function(r){
+      var card = document.createElement('div');
+      card.className = 'full-card';
+      card.setAttribute('data-student-name', r.name);
+      card.setAttribute('data-student-id', normalizeStudentId(r.studentId));
+      card.innerHTML =
+        '<div class="trophy">🏆</div>' +
+        '<div class="name">' + r.name + '</div>' +
+        '<div class="track">' + r.track + '</div>' +
+        '<div class="score-row">' +
+          '<div>' +
+            '<div class="score">' + r.score.toLocaleString('id-ID') + '</div>' +
+            '<div class="score-label">Total Score</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="admin-dl-slot"></div>';
+      fullGrid.appendChild(card);
+    });
+
+    var compList = document.getElementById('compList');
+    compList.innerHTML = '';
+    if (completedNotFull.length === 0){
+      compList.innerHTML = '<div class="state-msg">Belum ada student pada kategori ini.</div>';
+    }
+    completedNotFull.forEach(function(r, i){
+      var row = document.createElement('div');
+      row.className = 'comp-row';
+      row.setAttribute('data-student-name', r.name);
+      row.setAttribute('data-student-id', normalizeStudentId(r.studentId));
+      row.innerHTML =
+        '<div class="comp-rank">' + (i + 1) + '</div>' +
+        '<div class="comp-name">' + r.name + '</div>' +
+        '<div class="comp-track">' + r.track + '</div>' +
+        '<div class="comp-meta">' +
+          '<span class="comp-score">' + (isNaN(r.score) ? '-' : r.score.toLocaleString('id-ID')) + '</span>' +
+          '<span class="comp-check">✓ 100%</span>' +
+        '</div>' +
+        '<div class="admin-dl-slot"></div>';
+      compList.appendChild(row);
+    });
+
+    var allRecords = fullScore.concat(completedNotFull);
+    renderMyDownload(allRecords);
+    setupAdminCardDownload();
+
+    if (currentSession && currentSession.isAdmin && !adminViewingHandled) {
+      adminViewingHandled = true;
+      applyAdminViewingFocus(allRecords);
+    }
+  }
+
+  function findStudentElement(sid){
+    var candidates = document.querySelectorAll('[data-student-id]');
+    for (var i = 0; i < candidates.length; i++){
+      if (candidates[i].getAttribute('data-student-id') === sid) return candidates[i];
+    }
+    return null;
+  }
+
+  function applyAdminViewingFocus(records){
+    var viewing = (typeof getAdminViewing === 'function') ? getAdminViewing() : null;
+    var banner = document.getElementById('adminViewingBanner');
+    if (!viewing) {
+      if (banner) banner.style.display = 'none';
+      return;
+    }
+
+    var sid = normalizeStudentId(viewing.studentId);
+    var viewingBatchKey = normalizeBatch(viewing.batch);
+    var batchMismatch = viewingBatchKey && lastLoadedBatchKey && viewingBatchKey !== lastLoadedBatchKey;
+
+    var rec = null;
+    for (var i = 0; i < records.length; i++){
+      if (normalizeStudentId(records[i].studentId) === sid){ rec = records[i]; break; }
+    }
+
+    if (banner) {
+      banner.style.display = 'flex';
+      var displayName = (rec && rec.name) || viewing.nama || viewing.studentId;
+      var statusHtml;
+      if (batchMismatch) {
+        statusHtml = 'Batch ' + viewing.batch + ' belum terdaftar di Hall of Fame, menampilkan Batch ' + lastLoadedBatchKey + ' sebagai gantinya.';
+      } else if (rec && rec.score === 5400) {
+        statusHtml = 'Full Score 🏆';
+      } else if (rec && rec.completion === 100) {
+        statusHtml = 'Completion 100%';
+      } else {
+        statusHtml = 'belum masuk kriteria Hall of Fame batch ini (belum Full Score / belum Completion 100%).';
+      }
+      banner.innerHTML = '🛡️ Sedang meninjau <strong>' + displayName + '</strong> — ' + statusHtml +
+        ' <a id="closeAdminViewingBtn" href="#">Tutup peninjauan</a>';
+      var closeBtn = document.getElementById('closeAdminViewingBtn');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function(e){
+          e.preventDefault();
+          clearAdminViewing();
+          location.reload();
+        });
+      }
+    }
+
+    if (!rec || batchMismatch) return;
+
+    var el = findStudentElement(sid);
+    if (!el) return;
+
+    el.classList.add('admin-viewing-highlight');
+    setTimeout(function(){
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 150);
+
+    setTimeout(function(){
+      el.click();
+    }, 450);
+  }
+
+  function setupAdminCardDownload(){
+    if (!currentSession || !currentSession.isAdmin) return;
+
+    var cards = document.querySelectorAll('.full-card[data-student-name], .comp-row[data-student-name]');
+    cards.forEach(function(card){
+      card.classList.add('admin-clickable');
+      card.addEventListener('click', function(ev){
+        if (ev.target.closest('a')) return;
+
+        var slot = card.querySelector('.admin-dl-slot');
+        if (!slot) return;
+
+        if (slot.dataset.open === '1'){
+          slot.innerHTML = '';
+          slot.dataset.open = '0';
+          return;
+        }
+
+        var name = card.getAttribute('data-student-name');
+        var file = testimonialPath(name);
+        slot.dataset.open = '1';
+        slot.innerHTML = '<div class="admin-dl-checking">Memeriksa testimonial…</div>';
+
+        fetch(file, { method: 'HEAD' })
+          .then(function(res){
+            if (slot.dataset.open !== '1') return;
+            if (res.ok){
+              slot.innerHTML =
+                '<a class="dl-btn-sm" style="width:100%;" href="' + file + '" download="' + slugify(name) + '-testimonial.png">' +
+                  downloadIcon + ' Download Testimonial ' + name +
+                '</a>';
+            } else {
+              slot.innerHTML = '<div class="admin-dl-missing">' + missingIcon + ' File Testimoni Belum Tersedia</div>';
+            }
+          })
+          .catch(function(){
+            if (slot.dataset.open !== '1') return;
+            slot.innerHTML = '<div class="admin-dl-missing">' + missingIcon + ' File Testimoni Belum Tersedia</div>';
+          });
+      });
+    });
+  }
+
+  function normalizeStudentId(id){
+    return String(id || '').trim();
+  }
+
+  function moveMyCardToFront(list){
+    if (!currentSession || !currentSession.studentId) return list;
+    var sid = normalizeStudentId(currentSession.studentId);
+    var myIndex = -1;
+    for (var i = 0; i < list.length; i++){
+      if (normalizeStudentId(list[i].studentId) === sid){ myIndex = i; break; }
+    }
+    if (myIndex <= 0) return list;
+    var copy = list.slice();
+    var mine = copy.splice(myIndex, 1)[0];
+    copy.unshift(mine);
+    return copy;
+  }
+
+  function renderMyDownload(records){
+    var wrap = document.getElementById('myDownloadWrap');
+    if (!wrap) return;
+
+    if (!currentSession || !currentSession.studentId){
+      wrap.style.display = 'none';
+      wrap.innerHTML = '';
+      return;
+    }
+
+    var sid = normalizeStudentId(currentSession.studentId);
+    var myRecord = records.filter(function(r){
+      return normalizeStudentId(r.studentId) === sid;
+    })[0];
+
+    if (!myRecord){
+      wrap.style.display = 'none';
+      wrap.innerHTML = '';
+      return;
+    }
+
+    var file = testimonialPath(myRecord.name);
+    wrap.style.display = 'flex';
+    wrap.innerHTML = '<div class="my-dl-checking">Memeriksa testimonial…</div>';
+
+    fetch(file, { method: 'HEAD' })
+      .then(function(res){
+        if (res.ok){
+          wrap.innerHTML =
+            '<a class="my-dl-btn" href="' + file + '" download="' + slugify(myRecord.name) + '-testimonial.png">' +
+              downloadIcon + ' Download Testimonial Kamu' +
+            '</a>';
+        } else {
+          wrap.innerHTML = '<div class="my-dl-missing">' + missingIcon + ' File Testimoni Belum Tersedia, Hubungi Admin</div>';
+        }
+      })
+      .catch(function(){
+        wrap.innerHTML = '<div class="my-dl-missing">' + missingIcon + ' File Testimoni Belum Tersedia, Hubungi Admin</div>';
+      });
+  }
+
+  function showError(){
+    document.getElementById('fullGrid').innerHTML = '<div class="state-msg">Gagal memuat data. Silakan coba lagi nanti.</div>';
+    document.getElementById('compList').innerHTML = '';
+  }
+
+  function showUnavailable(msg){
+    document.getElementById('fullGrid').innerHTML = '<div class="state-msg">' + msg + '</div>';
+    document.getElementById('compList').innerHTML = '';
+    document.getElementById('fullCount').textContent = '–';
+    document.getElementById('compCount').textContent = '–';
+  }
+
+  function normalizeBatch(batch) {
+    return String(batch || "").replace(/[^0-9]/g, "");
+  }
+
+  function withTimeout(promise, ms, label){
+    return Promise.race([
+      promise,
+      new Promise(function(_, reject){
+        setTimeout(function(){ reject(new Error(label + ' timeout setelah ' + (ms/1000) + 's')); }, ms);
+      })
+    ]);
+  }
+
+  function showLoginTimeout(){
+    document.querySelector('.wrap').innerHTML =
+      '<div class="state-msg" style="padding:140px 20px;">' +
+        'Server login sedang lambat merespons. Coba lagi ya.' +
+        '<div style="margin-top:16px; display:flex; gap:10px; justify-content:center;">' +
+          '<button onclick="location.reload()" style="cursor:pointer; padding:9px 18px; border-radius:999px; border:1px solid var(--card-border); background:var(--card-bg); color:var(--cream); font-family:inherit; font-weight:600; font-size:13px;">Coba Lagi</button>' +
+          '<a href="../forum/" style="color:var(--teal); font-weight:700; text-decoration:none; align-self:center;">Kembali ke Forum</a>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function updateBatchLabel(batchKey){
+    var brand = document.getElementById('batchBrand');
+    var subtitle = document.getElementById('batchSubtitle');
+    var footer = document.getElementById('batchFooter');
+    if (brand) brand.textContent = 'BATCH ' + batchKey + ' · PERFORMANCE RECAP';
+    if (subtitle) subtitle.textContent = 'Daftar student dengan pencapaian terbaik pada Batch ' + batchKey;
+    if (footer) footer.textContent = 'Made by Richard J Winarta · Batch ' + batchKey + ' · Hall of Fame';
+    document.title = 'Batch ' + batchKey + ' — Hall of Fame';
+  }
+
+  function loadData(batchKeyForAdmin){
+    var path = batchKeyForAdmin ? ('/hall-of-fame?batch=' + encodeURIComponent(batchKeyForAdmin)) : '/hall-of-fame';
+    apiGet(path)
+      .then(function(data){
+        lastLoadedBatchKey = normalizeBatch(data.batch || batchKeyForAdmin);
+        updateBatchLabel(lastLoadedBatchKey);
+        render(data);
+      })
+      .catch(function(err){
+        console.error(err);
+        showUnavailable(err.message || 'Gagal memuat data Hall of Fame untuk batch ini.');
+      });
+  }
+
+  function setupAdminPicker(defaultBatchKey){
+    var row = document.getElementById('adminPickerRow');
+    var picker = document.getElementById('adminBatchPicker');
+    if (!row || !picker) return Promise.resolve([]);
+
+    return apiGet('/admin/batches').then(function(data){
+      var batches = data.batches || [];
+      if (batches.length === 0) batches = [defaultBatchKey];
+
+      row.style.display = 'flex';
+      picker.innerHTML = '';
+      batches.forEach(function(batchKey){
+        var opt = document.createElement('option');
+        opt.value = batchKey;
+        opt.textContent = 'Batch ' + batchKey;
+        picker.appendChild(opt);
+      });
+      picker.value = batches.indexOf(defaultBatchKey) !== -1 ? defaultBatchKey : batches[0];
+
+      picker.addEventListener('change', function(){
+        var selected = picker.value;
+        var banner = document.getElementById('adminViewingBanner');
+        if (banner) banner.style.display = 'none';
+        adminViewingHandled = true; // sudah ganti batch manual, jangan auto-highlight lagi
+        document.getElementById('fullGrid').innerHTML = '<div class="state-msg">Memuat data…</div>';
+        document.getElementById('compList').innerHTML = '';
+        loadData(selected);
+      });
+
+      return batches;
+    }).catch(function(){
+      row.style.display = 'flex';
+      picker.innerHTML = '';
+      var opt = document.createElement('option');
+      opt.value = defaultBatchKey;
+      opt.textContent = 'Batch ' + defaultBatchKey;
+      picker.appendChild(opt);
+      return [defaultBatchKey];
+    });
+  }
+
+  withTimeout(checkLogin(), 20000, 'Verifikasi login').then(function(session){
+    if (!session) return;
+    currentSession = session;
+    AUTH_TOKEN = session.token || getStoredToken();
+    var batchKey = normalizeBatch(session.batch);
+
+    if (session.isAdmin) {
+      var viewing = (typeof getAdminViewing === 'function') ? getAdminViewing() : null;
+      var viewingBatchKey = viewing ? normalizeBatch(viewing.batch) : null;
+      var defaultKey = viewingBatchKey || batchKey;
+
+      setupAdminPicker(defaultKey).then(function(batches){
+        var effectiveKey = (batches.indexOf(defaultKey) !== -1) ? defaultKey : batches[0];
+        document.getElementById('adminBatchPicker').value = effectiveKey;
+        updateBatchLabel(effectiveKey);
+        loadData(effectiveKey);
+      });
+      return;
+    }
+
+    updateBatchLabel(batchKey);
+    loadData();
+  }).catch(function(err){
+    console.error(err);
+    showLoginTimeout();
+  });
+
+})();
+</script>
+
+</body>
+</html>
