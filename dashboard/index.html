@@ -3,13 +3,510 @@
 <head><link rel="icon" type="image/x-icon" href="../logo-richard-icon.png">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0b0e14">
 <title>SG Richard Dashboard</title>
-<!-- Halaman Dashboard sudah dihapus: Forum sekarang jadi halaman utama.
-     File ini hanya mengalihkan link/bookmark lama ke Forum. -->
-<meta http-equiv="refresh" content="0; url=../forum/" />
-<script>window.location.replace("../forum/");</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0e14;
+    --panel: #12161f;
+    --surface: #171d2b;
+    --line: #1f2636;
+    --line-2: #2a3245;
+    --ink: #e8eaf0;
+    --ink-soft: #9aa3b5;
+    --purple: #6c63ff;
+    --purple-deep: #4c46c9;
+    --violet: #a78bfa;
+    --teal: #2fd0a3;
+    --orange: #f7b733;
+    --red: #f87171;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--ink);
+    font-family: 'DM Sans', sans-serif; font-size: 15px;
+    background:
+      radial-gradient(ellipse 800px 420px at 12% 0%, rgba(108, 99, 255, 0.16), transparent 60%),
+      var(--bg);
+    background-attachment: fixed;
+  }
+  a { color: #c4b5fd; }
+  a:hover { color: var(--ink); }
+  button { font-family: inherit; }
+  .syne { font-family: 'Syne', sans-serif; }
+
+  .shell { max-width: 1320px; margin: 0 auto; padding: 24px; display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+
+  /* Sidebar */
+  .sidebar { flex: 1 1 220px; max-width: 240px; min-width: 0; padding: 22px 16px; border-radius: 22px; background: var(--panel); border: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .logo { width: 48px; height: 48px; object-fit: contain; }
+  .avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--purple); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; margin-top: 8px; color: #fff; }
+  .student-name { font-weight: 700; text-align: center; }
+  .student-meta { font-size: 12px; color: var(--ink-soft); }
+  .admin-tag { display: none; font-size: 11px; font-weight: 800; letter-spacing: .04em; color: var(--orange); background: rgba(247,183,51,0.14); border: 1px solid rgba(247,183,51,0.4); border-radius: 999px; padding: 3px 10px; }
+  .nav { width: 100%; display: flex; flex-direction: column; gap: 4px; margin-top: 14px; }
+  .nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--ink); }
+  .nav a:hover { background: rgba(255,255,255,0.04); }
+  .nav a[aria-current="page"] { background: rgba(108,99,255,0.16); color: #c4b5fd; }
+  .nav .dot { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .nav #adminBatchNav { display: none; }
+
+  /* Main */
+  .main { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+  .top-row { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .top-row h1 { margin: 0; font-family: 'Syne', sans-serif; font-size: 30px; overflow-wrap: anywhere; }
+  .top-row .sub { color: var(--ink-soft); margin-top: 4px; }
+  .logout-btn { height: 40px; padding: 0 16px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line-2); color: var(--ink); font-size: 13px; font-weight: 700; cursor: pointer; }
+  .logout-btn:hover { border-color: rgba(248,113,113,0.6); color: var(--red); }
+
+  /* Kartu "Selanjutnya" (sama seperti /app/) */
+  .hero { position: relative; overflow: hidden; isolation: isolate; border-radius: 24px; padding: 24px; background: linear-gradient(155deg, var(--purple), var(--purple-deep)); color: #fff; display: flex; flex-direction: column; gap: 14px; }
+  .hero .dots { position: absolute; inset: 0; z-index: -1; opacity: .5; background-image: radial-gradient(circle, rgba(255,255,255,0.16) 1.5px, transparent 1.5px); background-size: 14px 14px; }
+  .hero .orb { position: absolute; width: 220px; height: 220px; right: -70px; top: -90px; border-radius: 50%; background: rgba(255,255,255,0.10); z-index: -1; }
+  .hero-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .hero-cat { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 999px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hero-when { font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .hero-time { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 64px; line-height: .95; letter-spacing: -0.02em; }
+  .hero-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 22px; line-height: 1.25; white-space: pre-line; overflow-wrap: anywhere; }
+  .hero-day { font-size: 13px; opacity: .88; margin-top: 2px; }
+  .hero-btn { align-self: flex-start; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #fff; color: #2b2670; font-weight: 700; font-size: 14px; text-decoration: none; cursor: pointer; }
+  .hero-btn:hover { background: #ecebff; color: #2b2670; }
+
+  /* Notifikasi (sama seperti /app/) */
+  .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .section-head h2 { margin: 0; font-family: 'Syne', sans-serif; font-size: 20px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; background: var(--red); color: #fff; border-radius: 999px; padding: 1px 8px; }
+  .text-btn { background: transparent; border: 0; color: var(--violet); font-size: 13px; font-weight: 700; padding: 8px 4px; cursor: pointer; }
+  .text-btn:disabled { opacity: .4; cursor: default; }
+  .notif-list { display: flex; flex-direction: column; gap: 10px; }
+  .notif { display: flex; gap: 12px; align-items: flex-start; width: 100%; padding: 14px; border-radius: 16px; text-align: left; color: var(--ink); cursor: pointer; border: 1px solid rgba(108,99,255,0.35); background: var(--panel); }
+  .notif.read { border-color: rgba(255,255,255,0.05); background: transparent; }
+  .notif:hover { border-color: rgba(167,139,250,0.6); }
+  .notif-icon { width: 36px; height: 36px; flex: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px; }
+  .notif-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; line-height: 1.35; }
+  .notif-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-soft); }
+  .notif-title { font-size: 15px; line-height: 1.3; font-weight: 700; }
+  .notif.read .notif-title { font-weight: 500; }
+  .notif-snippet { font-size: 13px; color: var(--ink-soft); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .notif-more { font-size: 12px; font-weight: 700; color: var(--violet); margin-top: 2px; }
+
+  /* Calendar */
+  .side { flex: 1 1 260px; max-width: 300px; min-width: 0; }
+  .calendar { padding: 18px; border-radius: 20px; background: var(--panel); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 14px; max-height: calc(100vh - 48px); overflow-y: auto; }
+  .calendar h3 { margin: 0; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; }
+  .cal-day { display: flex; flex-direction: column; gap: 10px; }
+  .cal-day.today { padding: 12px; margin: 0 -6px; border-radius: 14px; background: rgba(108,99,255,0.10); border: 1px solid rgba(108,99,255,0.35); }
+  .cal-day-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 700; color: var(--ink-soft); }
+  .cal-day.today .cal-day-head { color: #c4b5fd; }
+  .today-tag { font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px; color: #fff; background: var(--purple); }
+  .cal-item { display: flex; gap: 10px; }
+  .cal-bar { width: 4px; flex: none; border-radius: 4px; }
+  .cal-item-meta { font-size: 12px; color: var(--ink-soft); }
+  .cal-item-title { font-weight: 600; white-space: pre-line; overflow-wrap: anywhere; }
+  .optional { margin-left: 6px; font-size: 10.5px; font-weight: 700; padding: 1px 7px; border-radius: 999px; color: var(--ink-soft); border: 1px solid var(--line-2); }
+
+  .state { padding: 14px; border-radius: 14px; font-size: 14px; color: var(--ink-soft); background: var(--panel); border: 1px dashed var(--line-2); }
+  .state.error { color: #ffb4b4; border-color: rgba(248,113,113,0.5); }
+
+  /* Detail pesan */
+  .modal-backdrop { position: fixed; inset: 0; z-index: 50; background: rgba(4,6,10,0.72); display: none; align-items: center; justify-content: center; padding: 16px; }
+  .modal-backdrop.open { display: flex; }
+  .modal { width: min(560px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; border-radius: 22px; background: var(--panel); border: 1px solid rgba(255,255,255,0.12); padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .kind-pill { align-self: flex-start; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+  .modal h2 { margin: 0; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; line-height: 1.25; overflow-wrap: anywhere; }
+  .sender { display: flex; align-items: center; gap: 10px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .sender-avatar { width: 36px; height: 36px; flex: none; border-radius: 50%; background: var(--purple); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; }
+  .modal p { margin: 0; font-size: 15px; line-height: 1.65; color: #c9cfdb; white-space: pre-line; overflow-wrap: anywhere; }
+  .link-row { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 14px; background: var(--surface); border: 1px solid rgba(255,255,255,0.07); color: var(--ink); text-decoration: none; font-weight: 600; font-size: 14px; }
+  .icon-btn { width: 40px; height: 40px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line-2); color: var(--ink); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .modal-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .modal-nav button { min-height: 44px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line-2); color: var(--ink); font-weight: 700; cursor: pointer; }
+  .modal-nav button:disabled { opacity: .4; cursor: default; }
+
+  @media (max-width: 860px) {
+    .sidebar, .side { max-width: none; }
+    .calendar { max-height: none; }
+  }
+  @media (max-width: 640px) {
+    .shell { padding: 16px; }
+    .hero-time { font-size: 52px; }
+  }
+</style>
 </head>
 <body>
-  <p>Mengarahkan ke <a href="../forum/">Forum</a>...</p>
+
+<div class="shell">
+  <aside class="sidebar">
+    <img class="logo" src="../images/logo-icon.png" alt="Logo SG Richard" />
+    <div class="avatar" id="avatar">--</div>
+    <div class="student-name" id="studentName">Memuat...</div>
+    <div class="student-meta" id="studentMeta">—</div>
+    <div class="admin-tag" id="adminTag">ADMIN</div>
+    <nav class="nav" aria-label="Menu utama">
+      <a href="./" aria-current="page"><span class="dot" style="background:var(--purple)"></span>Dashboard</a>
+      <a href="../directory/"><span class="dot" style="background:var(--teal)"></span>Directory</a>
+      <a href="../forum/"><span class="dot" style="background:var(--teal)"></span>Forum</a>
+      <a href="../hall-of-fame/"><span class="dot" style="background:var(--orange)"></span>Hall of Fame</a>
+      <a href="../admin/batches/" id="adminBatchNav"><span class="dot" style="background:var(--orange)"></span>Kelola Batch</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="top-row">
+      <div>
+        <h1 id="greeting">Hello,</h1>
+        <div class="sub">Ini yang akan terjadi hari ini.</div>
+      </div>
+      <button type="button" class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="hero" id="hero">
+      <div class="dots"></div>
+      <div class="orb"></div>
+      <div class="hero-top">
+        <span class="hero-cat" id="heroCat">Selanjutnya · Jadwal</span>
+        <span class="hero-when" id="heroWhen"></span>
+      </div>
+      <div class="hero-time" id="heroTime">—</div>
+      <div>
+        <div class="hero-title" id="heroTitle">Memuat jadwal…</div>
+        <div class="hero-day" id="heroDay"></div>
+      </div>
+      <a class="hero-btn" id="heroBtn" href="#calendar">Lihat di Calendar
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+
+    <section style="display:flex; flex-direction:column; gap:10px;">
+      <div class="section-head">
+        <h2>Notifikasi <span class="badge" id="unreadBadge" hidden></span></h2>
+        <button type="button" class="text-btn" id="markAllBtn" disabled>Tandai semua dibaca</button>
+      </div>
+      <div class="notif-list" id="notifList"><div class="state">Memuat notifikasi…</div></div>
+      <button type="button" class="text-btn" id="showAllBtn" hidden style="align-self:flex-start;"></button>
+    </section>
+  </main>
+
+  <aside class="side">
+    <div class="calendar" id="calendar">
+      <h3>Calendar</h3>
+      <div id="calendarBody"><div class="state">Memuat jadwal…</div></div>
+    </div>
+  </aside>
+</div>
+
+<div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="kind-pill" id="modalKind"></span>
+      <span style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:12px; color:var(--ink-soft);" id="modalPos"></span>
+        <button type="button" class="icon-btn" id="modalClose" aria-label="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </span>
+    </div>
+    <h2 id="modalTitle"></h2>
+    <div class="sender">
+      <span class="sender-avatar">R</span>
+      <span style="display:flex; flex-direction:column; line-height:1.35;">
+        <span style="font-size:14px; font-weight:700;">Richard</span>
+        <span style="font-size:12px; color:var(--ink-soft);" id="modalDate"></span>
+      </span>
+    </div>
+    <div id="modalBody" style="display:flex; flex-direction:column; gap:12px;"></div>
+    <div id="modalLinks" style="display:flex; flex-direction:column; gap:8px;"></div>
+    <div class="modal-nav">
+      <button type="button" id="modalPrev">‹ Sebelumnya</button>
+      <button type="button" id="modalNext">Berikutnya ›</button>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/auth.js"></script>
+<script>
+  // Data lewat Worker (sgr-backend) yang sama dengan app /app/:
+  //   /me/dashboard      -> schedule (kartu "Selanjutnya" + Calendar)
+  //   /me/notifications  -> pesan notifikasi batch student
+  const WORKER_BASE = "https://sgr-backend.richweinz27.workers.dev";
+  // Key yang sama dengan app /app/, jadi status "sudah dibaca" ikut sinkron di browser yang sama.
+  const READ_KEY = "sgr_app_notifs_read";
+  const NOTIF_PREVIEW = 5;
+
+  const MONTH_ID = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+  const DOW = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+  const FULLDOW = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const CAL_COLOR = { "Live Lesson": "#6c63ff", "Recording": "#2fd0a3", "Task Deadline": "#f7b733" };
+  const NOTIF_STYLE = {
+    "Morning Message": ["rgba(247,183,51,0.15)", "#f7b733"],
+    "Nilai": ["rgba(247,183,51,0.15)", "#f7b733"],
+    "Pengingat": ["rgba(248,113,113,0.14)", "#f87171"],
+    "Sesi": ["rgba(108,99,255,0.18)", "#a78bfa"],
+    "Small Group": ["rgba(47,208,163,0.15)", "#2fd0a3"],
+    "Pengumuman": ["rgba(79,140,255,0.16)", "#7fa9ff"]
+  };
+  const styleOf = (kind) => NOTIF_STYLE[kind] || ["rgba(108,99,255,0.18)", "#a78bfa"];
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const hm = (d) => pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+  const dkey = (d) => d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+  const fromKey = (key) => { const [y, m, d] = key.split("-").map(Number); return new Date(y, m - 1, d); };
+  const longDay = (key) => { const d = fromKey(key); return FULLDOW[d.getDay()] + ", " + d.getDate() + " " + MONTH_ID[d.getMonth()]; };
+  const initials = (name) => String(name || "").trim().split(/\s+/).slice(0, 2).map((w) => w[0] || "").join("").toUpperCase() || "--";
+  const safeUrl = (u) => /^https?:\/\//i.test(String(u || "").trim()) ? String(u).trim() : "";
+  const linkify = (text) => esc(text).replace(/(https?:\/\/[^\s<]+[^\s<.,;:!?)\]'"])/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+
+  async function apiGet(path) {
+    const token = sessionStorage.getItem("token");
+    const res = await fetch(WORKER_BASE + path, { headers: token ? { Authorization: "Bearer " + token } : {} });
+    const data = await res.json().catch(() => null);
+    if (res.status === 401) { logout(); throw new Error("Sesi berakhir. Silakan login lagi."); }
+    if (!data || !res.ok || data.error || data.success === false) throw new Error((data && data.error) || "Gagal mengambil data dari server.");
+    return data;
+  }
+
+  // ============ JADWAL (logika sama dengan app-src/src/lib/schedule.js) ============
+  // Jadwal dari Worker memakai waktu Jakarta (WIB). Jam diubah ke zona waktu perangkat student.
+  const JKT_MS = 7 * 3600000;
+  const CLOCK_RE = /(\d{1,2})([:.])(\d{2})/g;
+  const jktInstant = (key, h, m) => { const [y, mo, d] = key.split("-").map(Number); return Date.UTC(y, mo - 1, d, h, m) - JKT_MS; };
+
+  function localizeTime(key, timeStr) {
+    const raw = String(timeStr || "").replace(/\s*(JKT|WIB)\s*/gi, " ").trim();
+    let first = null;
+    const time = raw.replace(CLOCK_RE, (full, h, sep, m) => {
+      const H = +h, M = +m;
+      if (H > 23 || M > 59) return full;
+      const at = jktInstant(key, H, M);
+      if (first === null) first = at;
+      return hm(new Date(at)).replace(":", sep);
+    });
+    if (first === null) return { key, time: raw, at: null };
+    return { key: dkey(new Date(first)), time, at: first };
+  }
+
+  function tzLabel(date) {
+    try {
+      const p = new Intl.DateTimeFormat("id-ID", { timeZoneName: "short" }).formatToParts(date).find((x) => x.type === "timeZoneName");
+      return p ? p.value : "";
+    } catch (e) { return ""; }
+  }
+
+  function flattenSchedule(schedule) {
+    return (schedule || []).flatMap((day) => (day.items || []).map((it) => {
+      const l = localizeTime(day.date, it.time);
+      return {
+        key: l.key, time: l.time, at: l.at,
+        cat: String(it.category || "").trim() || "Event",
+        title: String(it.title || "").trim().replace(/\r\n?/g, "\n"),
+        optional: it.optional === true || String(it.optional).toUpperCase() === "TRUE",
+        link: safeUrl(it.link || it.url)
+      };
+    })).filter((e) => e.key && e.title)
+      .sort((a, b) => a.key.localeCompare(b.key) || (a.at ?? 0) - (b.at ?? 0));
+  }
+
+  function nextEvent(events, now) {
+    const todayKey = dkey(now), t = now.getTime();
+    return events.find((e) => (e.at != null ? e.at >= t : e.key >= todayKey)) || null;
+  }
+
+  function whenLabel(ev, now) {
+    if (ev.key !== dkey(now)) return FULLDOW[fromKey(ev.key).getDay()];
+    if (ev.at == null) return "Hari ini";
+    const diff = Math.max(0, Math.round((ev.at - now.getTime()) / 60000));
+    return diff < 60 ? diff + " menit lagi" : Math.floor(diff / 60) + " jam lagi";
+  }
+
+  let events = [];
+  let scheduleState = "loading"; // loading | ok | error
+
+  function renderHero() {
+    const now = new Date();
+    const ev = scheduleState === "ok" ? nextEvent(events, now) : null;
+    const btn = $("heroBtn");
+    if (ev) {
+      $("heroCat").textContent = "Selanjutnya · " + ev.cat;
+      $("heroWhen").textContent = whenLabel(ev, now);
+      $("heroTime").textContent = ev.time || "—";
+      $("heroTitle").textContent = ev.title;
+      const tz = ev.at != null ? tzLabel(now) : "";
+      $("heroDay").textContent = longDay(ev.key) + (tz ? " · " + tz : "");
+    } else {
+      $("heroCat").textContent = "Selanjutnya · Jadwal";
+      $("heroWhen").textContent = "";
+      $("heroTime").textContent = "—";
+      $("heroTitle").textContent = scheduleState === "loading" ? "Memuat jadwal…"
+        : scheduleState === "error" ? "Jadwal belum bisa dimuat" : "Tidak ada jadwal lagi minggu ini";
+      $("heroDay").textContent = "";
+    }
+    const label = ev && ev.link ? "Masuk ke Ruang Sesi" : "Lihat di Calendar";
+    btn.firstChild.textContent = label + " ";
+    if (ev && ev.link) { btn.href = ev.link; btn.target = "_blank"; btn.rel = "noopener noreferrer"; }
+    else { btn.href = "#calendar"; btn.removeAttribute("target"); btn.removeAttribute("rel"); }
+  }
+
+  function renderCalendar() {
+    const body = $("calendarBody");
+    if (scheduleState === "error") { body.innerHTML = '<div class="state error">Jadwal belum bisa dimuat. Muat ulang halaman untuk mencoba lagi.</div>'; return; }
+    const todayKey = dkey(new Date());
+    const groups = new Map();
+    events.forEach((e) => { if (!groups.has(e.key)) groups.set(e.key, []); groups.get(e.key).push(e); });
+    if (!groups.has(todayKey) && (!events.length || events[events.length - 1].key >= todayKey)) groups.set(todayKey, []);
+    const keys = [...groups.keys()].sort();
+    if (!keys.length) { body.innerHTML = '<div class="state">Belum ada jadwal minggu ini.</div>'; return; }
+    body.innerHTML = keys.map((key) => {
+      const items = groups.get(key);
+      const isToday = key === todayKey;
+      const list = items.length ? items.map((e) => `
+        <div class="cal-item">
+          <span class="cal-bar" style="background:${CAL_COLOR[e.cat] || "#f7b733"}"></span>
+          <div>
+            <div class="cal-item-meta">${esc(e.cat)}${e.time ? " · " + esc(e.time) : ""}</div>
+            <div class="cal-item-title">${esc(e.title)}${e.optional ? '<span class="optional">Optional</span>' : ""}</div>
+          </div>
+        </div>`).join("")
+        : `<div class="cal-item-meta">${isToday ? "Tidak ada jadwal hari ini" : "Tidak ada jadwal"}</div>`;
+      return `<div class="cal-day${isToday ? " today" : ""}">
+        <div class="cal-day-head"><span>${esc(longDay(key))}</span>${isToday ? '<span class="today-tag">Hari ini</span>' : ""}</div>
+        ${list}
+      </div>`;
+    }).join("");
+  }
+
+  // ============ NOTIFIKASI (tampilan sama dengan app /app/) ============
+  let notifs = [];
+  let notifState = "loading";
+  let showAll = false;
+  let openIdx = -1;
+
+  function loadReadIds() { try { return JSON.parse(localStorage.getItem(READ_KEY) || "[]"); } catch (e) { return []; } }
+  let readIds = loadReadIds();
+  function markRead(ids) {
+    readIds = [...new Set([...readIds, ...ids])].slice(-500);
+    try { localStorage.setItem(READ_KEY, JSON.stringify(readIds)); } catch (e) { /* abaikan */ }
+  }
+  const isRead = (n) => readIds.includes(n.id);
+
+  const midnight = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  function mapNotif(row, now) {
+    const d = new Date(row.created_at);
+    const diff = Math.round((midnight(now) - midnight(d)) / 86400000);
+    const time = diff <= 0 ? hm(d) : diff === 1 ? "Kemarin" : diff < 7 ? DOW[d.getDay()] : d.getDate() + " " + MONTH_ID[d.getMonth()];
+    const url = safeUrl(row.link_url);
+    return {
+      id: row.id, kind: row.kind || "Pesan", title: row.title || "", body: row.body || "", time,
+      date: FULLDOW[d.getDay()] + ", " + d.getDate() + " " + MONTH_ID[d.getMonth()] + " · " + hm(d),
+      links: url ? [{ name: row.link_name || "Buka link", url }] : []
+    };
+  }
+
+  function renderNotifs() {
+    const list = $("notifList");
+    const unread = notifs.filter((n) => !isRead(n)).length;
+    $("unreadBadge").hidden = !unread;
+    $("unreadBadge").textContent = unread;
+    $("markAllBtn").disabled = !unread;
+
+    if (notifState === "loading") { list.innerHTML = '<div class="state">Memuat notifikasi…</div>'; return; }
+    if (notifState === "error") { list.innerHTML = '<div class="state error">Gagal memuat notifikasi. Muat ulang halaman untuk mencoba lagi.</div>'; $("showAllBtn").hidden = true; return; }
+    if (!notifs.length) { list.innerHTML = '<div class="state">Belum ada notifikasi.</div>'; $("showAllBtn").hidden = true; return; }
+
+    const shown = showAll ? notifs : notifs.slice(0, NOTIF_PREVIEW);
+    list.innerHTML = shown.map((n, i) => {
+      const [bg, fg] = styleOf(n.kind);
+      return `<button type="button" class="notif${isRead(n) ? " read" : ""}" data-idx="${i}">
+        <span class="notif-icon" style="background:${bg}; color:${fg};">${esc(n.kind[0])}</span>
+        <span class="notif-body">
+          <span class="notif-meta"><span>${esc(n.kind)}</span><span>${esc(n.time)}</span></span>
+          <span class="notif-title">${esc(n.title)}</span>
+          <span class="notif-snippet">${esc(n.body.replace(/\n+/g, " "))}</span>
+          <span class="notif-more">Baca selengkapnya ›</span>
+        </span>
+      </button>`;
+    }).join("");
+    const more = notifs.length > NOTIF_PREVIEW;
+    $("showAllBtn").hidden = !more;
+    $("showAllBtn").textContent = showAll ? "Tampilkan lebih sedikit" : "Lihat semua (" + notifs.length + ")";
+  }
+
+  function openNotif(idx) {
+    const n = notifs[idx];
+    if (!n) return;
+    openIdx = idx;
+    markRead([n.id]);
+    const [bg, fg] = styleOf(n.kind);
+    const pill = $("modalKind");
+    pill.textContent = n.kind; pill.style.background = bg; pill.style.color = fg;
+    $("modalPos").textContent = (idx + 1) + " dari " + notifs.length;
+    $("modalTitle").textContent = n.title;
+    $("modalDate").textContent = "Student Advisor · " + n.date;
+    $("modalBody").innerHTML = n.body.split(/\n\n+/).map((p) => `<p>${linkify(p)}</p>`).join("");
+    $("modalLinks").innerHTML = n.links.map((l) => `<a class="link-row" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">${esc(l.name)} <span style="margin-left:auto; color:var(--ink-soft);">↗</span></a>`).join("");
+    $("modalPrev").disabled = idx === 0;
+    $("modalNext").disabled = idx === notifs.length - 1;
+    $("modal").classList.add("open");
+    renderNotifs();
+    $("modalClose").focus();
+  }
+  function closeNotif() { $("modal").classList.remove("open"); openIdx = -1; }
+
+  $("notifList").addEventListener("click", (e) => {
+    const b = e.target.closest(".notif");
+    if (b) openNotif(Number(b.dataset.idx));
+  });
+  $("markAllBtn").addEventListener("click", () => { markRead(notifs.map((n) => n.id)); renderNotifs(); });
+  $("showAllBtn").addEventListener("click", () => { showAll = !showAll; renderNotifs(); });
+  $("modalClose").addEventListener("click", closeNotif);
+  $("modalPrev").addEventListener("click", () => openNotif(openIdx - 1));
+  $("modalNext").addEventListener("click", () => openNotif(openIdx + 1));
+  $("modal").addEventListener("click", (e) => { if (e.target === $("modal")) closeNotif(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && openIdx >= 0) closeNotif(); });
+
+  // ============ INIT ============
+  async function init() {
+    renderHero();
+    let session;
+    try { session = await checkLogin(); } catch (e) { session = null; }
+    if (!session) return; // checkLogin sudah mengarahkan ke halaman login
+
+    const nama = session.nama || "Student";
+    $("avatar").textContent = initials(nama);
+    $("studentName").textContent = nama;
+    $("greeting").textContent = "Hello, " + nama;
+    $("studentMeta").textContent = session.isAdmin ? "Admin" : (session.studentId || "") + (session.batch ? " · Batch " + session.batch : "");
+    if (session.isAdmin) {
+      $("adminTag").style.display = "inline-block";
+      $("adminBatchNav").style.display = "flex";
+    }
+
+    apiGet("/me/dashboard").then((data) => {
+      events = flattenSchedule(data.schedule);
+      scheduleState = "ok";
+    }).catch((err) => {
+      console.error(err);
+      scheduleState = "error";
+    }).finally(() => { renderHero(); renderCalendar(); });
+
+    apiGet("/me/notifications").then((data) => {
+      const now = new Date();
+      notifs = (data.items || []).map((r) => mapNotif(r, now));
+      notifState = "ok";
+    }).catch((err) => {
+      console.error(err);
+      notifState = "error";
+    }).finally(renderNotifs);
+
+    setInterval(renderHero, 60000);
+  }
+
+  init();
+</script>
+
 </body>
 </html>

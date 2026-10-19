@@ -13,9 +13,11 @@ function logout() {
   else { try { sessionStorage.removeItem('token'); } catch { /* abaikan */ } window.location.href = '../login/'; }
 }
 
-// Forum = halaman utama website. Dashboard & Task Tracker sudah dihapus (dialihkan ke sini).
+// Urutan menu website: Dashboard (beranda) → Directory → Forum → Hall of Fame. Task Tracker sudah dihapus.
 const NAV = [
+  ['Dashboard', '../dashboard/'],
   ['Directory', '../directory/'],
+  ['Forum', './'],
   ['Hall of Fame', '../hall-of-fame/']
 ];
 
@@ -34,13 +36,15 @@ function Shell({ session }) {
   return (
     <div className="desk">
       <header className="desk-nav">
-        <a className="desk-brand" href="./">
+        <a className="desk-brand" href="../dashboard/">
           <span className="desk-logo"><img src="../app/logo-icon.png" alt="" /></span>
           <span className="syne">SG Richard Dashboard</span>
         </a>
         <nav className="desk-links" aria-label="Menu utama">
-          <a href="./" aria-current="page" className="on">Forum</a>
-          {NAV.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
+          {NAV.map(([label, href]) => {
+            const on = href === './';
+            return <a key={href} href={href} aria-current={on ? 'page' : undefined} className={on ? 'on' : undefined}>{label}</a>;
+          })}
           {session.isAdmin && <a href="../admin/batches/">Kelola Batch</a>}
         </nav>
         <div className="desk-user">
