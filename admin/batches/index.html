@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="id">
+<head><link rel="icon" type="image/x-icon" href="../../logo-richard-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelola Batch — SG Richard Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #0b0e14;
+    --panel: #12161f;
+    --surface-alt: #171d2b;
+    --ink: #e8eaf0;
+    --ink-soft: #808a9e;
+    --purple: #6c63ff; --purple-rgb: 108,99,255;
+    --purple-deep: #4c46c9;
+    --purple-glow: #a78bfa;
+    --teal: #2fd0a3; --teal-rgb: 47,208,163;
+    --teal-deep: #1ea883;
+    --orange: #f7b733; --orange-rgb: 247,183,51;
+    --orange-deep: #d69a1f;
+    --line: rgba(255,255,255,0.09);
+    --error: #f87171; --error-rgb: 248,113,113;
+    --error-tint: rgba(var(--error-rgb),0.14);
+    --shadow: rgba(0,0,0,0.45);
+    --radius-lg: 28px;
+    --radius-md: 18px;
+  }
+  [data-theme="light"] {
+    --cream: #fdf8ea;
+    --panel: #ffffff;
+    --surface-alt: #fbf0c8;
+    --ink: #393840;
+    --ink-soft: #6b6a72;
+    --teal: #2f8f6e; --teal-rgb: 47,143,110;
+    --teal-deep: #1f6e54;
+    --orange: #b8860f; --orange-rgb: 184,134,15;
+    --orange-deep: #8f6b0c;
+    --line: #e6d9a3;
+    --error: #c0392b; --error-rgb: 192,57,43;
+    --error-tint: rgba(var(--error-rgb),0.14);
+    --shadow: rgba(57,56,64,0.16);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'DM Sans', sans-serif;
+    background:
+      radial-gradient(ellipse 700px 400px at 15% 0%, rgba(var(--purple-rgb),0.16), transparent 60%),
+      radial-gradient(ellipse 600px 400px at 90% 100%, rgba(var(--orange-rgb),0.10), transparent 55%),
+      var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    transition: background 0.2s, color 0.2s;
+  }
+  h1, h2, h3 { font-family: 'Syne', sans-serif; }
+
+  .shell {
+    max-width: 920px;
+    margin: 40px auto;
+    padding: 40px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 30px 60px -30px var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .shell::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--purple), var(--orange), transparent);
+  }
+
+  .top-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 30px; gap: 16px; flex-wrap: wrap;
+  }
+  h1 { font-size: 28px; margin: 0; }
+  .sub { color: var(--ink-soft); font-size: 13.5px; margin-top: 6px; }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--purple-glow); text-decoration: none; font-size: 13px; font-weight: 600;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  .theme-toggle {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface-alt); border: 1px solid var(--line);
+    border-radius: 999px; padding: 6px 14px 6px 6px;
+    cursor: pointer; font-size: 12px; font-weight: 600; color: var(--ink-soft);
+  }
+  .theme-toggle:hover { border-color: var(--purple); color: var(--ink); }
+  .theme-toggle-icon {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--panel);
+    display: flex; align-items: center; justify-content: center; font-size: 13px;
+  }
+
+  .card {
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card h2 { font-size: 16px; margin: 0 0 16px; }
+
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block; font-size: 12.5px; font-weight: 600; color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .field input[type="text"] {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input[type="text"]:focus { border-color: var(--purple); }
+  .field .hint { font-size: 11.5px; color: var(--ink-soft); margin-top: 4px; }
+
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 600px) { .row-2 { grid-template-columns: 1fr; } }
+
+  .checkbox-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 4px; margin-bottom: 18px;
+  }
+  .checkbox-row input { width: 17px; height: 17px; accent-color: var(--teal); cursor: pointer; }
+  .checkbox-row label { font-size: 13px; color: var(--ink); cursor: pointer; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: none; border-radius: 999px;
+    padding: 11px 22px;
+    font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    cursor: pointer; transition: opacity 0.15s;
+    font-family: inherit;
+  }
+  .btn:hover { opacity: 0.9; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-primary { background: linear-gradient(135deg, var(--purple), var(--purple-glow)); color: #fff; }
+  .btn-ghost { background: var(--panel); color: var(--ink); border: 1px solid var(--line); }
+  .btn-danger { background: var(--error-tint); color: var(--error); border: 1px solid rgba(var(--error-rgb),0.3); }
+  .btn-danger:hover { background: var(--error); color: #fff; }
+
+  .form-msg { font-size: 12.5px; margin-top: 10px; display: none; }
+  .form-msg.ok { color: var(--teal-deep); display: block; }
+  .form-msg.err { color: var(--error); display: block; }
+
+  .batch-list { display: flex; flex-direction: column; gap: 10px; }
+  .batch-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; flex-wrap: wrap;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 18px;
+  }
+  .batch-row-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .batch-num {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px;
+    background: var(--surface-alt); border: 1px solid var(--line);
+    border-radius: 10px; padding: 4px 12px;
+  }
+  .batch-status {
+    font-size: 11px; font-weight: 700; letter-spacing: .03em;
+    padding: 3px 10px; border-radius: 999px;
+  }
+  .status-on { background: rgba(var(--teal-rgb),0.15); color: var(--teal-deep); }
+  .status-off { background: rgba(148,148,148,0.16); color: var(--ink-soft); }
+  .batch-row-actions { display: flex; gap: 8px; }
+  .btn-sm { padding: 7px 14px; font-size: 11px; }
+
+  .empty-state { text-align: center; padding: 30px; color: var(--ink-soft); font-size: 13.5px; }
+  .loading { text-align: center; padding: 30px; color: var(--ink-soft); font-size: 13.5px; }
+
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    align-items: center; justify-content: center; z-index: 50; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius-md); padding: 26px; max-width: 460px; width: 100%;
+  }
+  .modal-box h3 { font-size: 16px; margin: 0 0 10px; }
+  .modal-box p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; margin: 0 0 20px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="top-row">
+    <div>
+      <a class="back-link" href="../../forum/">← Kembali ke Forum</a>
+      <h1>Kelola Batch</h1>
+      <div class="sub">Tambah batch baru, atau ubah pengaturan batch yang sudah ada. Tidak perlu sentuh kode atau terminal.</div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+      <span class="theme-toggle-icon" id="themeToggleIcon">☀️</span>
+      <span id="themeToggleLabel">Mode Cerah</span>
+    </button>
+  </div>
+
+  <div class="card">
+    <h2 id="formTitle">➕ Tambah / Update Batch</h2>
+    <form id="batchForm">
+      <div class="row-2">
+        <div class="field">
+          <label for="fBatch">Nomor Batch</label>
+          <input type="text" id="fBatch" placeholder="contoh: 36" inputmode="numeric" required>
+          <div class="hint">Isi hanya angkanya saja.</div>
+        </div>
+        <div></div>
+      </div>
+
+      <div class="field">
+        <label for="fDb">Link Google Sheet — Database Student</label>
+        <input type="text" id="fDb" placeholder="Tempel link edit Google Sheet di sini" required>
+        <div class="hint">Boleh tempel link lengkap (https://docs.google.com/spreadsheets/d/.../edit) — ID-nya diambil otomatis.</div>
+      </div>
+
+      <div class="field">
+        <label for="fDirectory">Link Google Sheet — Directory</label>
+        <input type="text" id="fDirectory" placeholder="Tempel link edit Google Sheet di sini" required>
+      </div>
+
+      <div class="field">
+        <label for="fHof">Link Google Sheet — Hall of Fame <span style="font-weight:400;color:var(--ink-soft)">(opsional, boleh dikosongkan dulu)</span></label>
+        <input type="text" id="fHof" placeholder="Tempel link edit Google Sheet di sini">
+      </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="fHofEnabled">
+        <label for="fHofEnabled">Aktifkan Hall of Fame untuk batch ini sekarang</label>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button type="submit" class="btn btn-primary" id="submitBtn">Simpan Batch</button>
+        <button type="button" class="btn btn-ghost" id="cancelEditBtn" style="display:none;">Batal Edit</button>
+      </div>
+      <div class="form-msg" id="formMsg"></div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>📋 Batch Terdaftar</h2>
+    <div id="batchListArea"><div class="loading">Memuat...</div></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <h3>Hapus Batch <span id="deleteModalBatch"></span>?</h3>
+    <p>
+      Ini hanya menghapus pendaftaran batch ini dari sistem — <strong>Google Sheet-nya sendiri tidak akan terhapus atau berubah.</strong>
+      Tapi student di batch ini akan kehilangan akses ke Forum, Directory, dan Hall of Fame sampai batch ini didaftarkan ulang.
+    </p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="deleteCancelBtn">Batal</button>
+      <button class="btn btn-danger" id="deleteConfirmBtn">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../shared/auth.js"></script>
+<script>
+  function applyTheme(theme) {
+    if (theme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.getElementById('themeToggleIcon').textContent = '🌙';
+      document.getElementById('themeToggleLabel').textContent = 'Mode Gelap';
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      document.getElementById('themeToggleIcon').textContent = '☀️';
+      document.getElementById('themeToggleLabel').textContent = 'Mode Cerah';
+    }
+  }
+  const THEME_KEY = 'sgr-theme';
+  function toggleTheme() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const next = isLight ? 'dark' : 'light';
+    applyTheme(next);
+    try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+  }
+  (function initTheme() {
+    let saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+    applyTheme(saved === 'light' ? 'light' : 'dark');
+  })();
+
+  const WORKER_BASE = "https://sgr-backend.richweinz27.workers.dev";
+  let AUTH_TOKEN = null;
+
+  function getStoredToken() {
+    try { return sessionStorage.getItem("token") || null; } catch (e) { return null; }
+  }
+
+  async function apiGet(path) {
+    const token = AUTH_TOKEN || getStoredToken();
+    const res = await fetch(WORKER_BASE + path, { headers: token ? { Authorization: "Bearer " + token } : {} });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.success !== true) throw new Error(data.error || "Gagal mengambil data dari server");
+    return data;
+  }
+
+  async function apiPost(path, body) {
+    const token = AUTH_TOKEN || getStoredToken();
+    const res = await fetch(WORKER_BASE + path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: "Bearer " + token } : {}) },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.success !== true) throw new Error(data.error || "Gagal menyimpan ke server");
+    return data;
+  }
+
+  function escAttr(v) {
+    return String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  let editingBatch = null;
+
+  function renderBatchList(batches) {
+    const area = document.getElementById('batchListArea');
+    if (!batches.length) {
+      area.innerHTML = `<div class="empty-state">Belum ada batch terdaftar.</div>`;
+      return;
+    }
+    area.innerHTML = `<div class="batch-list">
+      ${batches.map(b => `
+        <div class="batch-row">
+          <div class="batch-row-left">
+            <span class="batch-num">Batch ${escAttr(b.batch)}</span>
+            <span class="batch-status ${b.hofEnabled ? 'status-on' : 'status-off'}">
+              ${b.hofEnabled ? '🏆 Hall of Fame Aktif' : 'Hall of Fame Nonaktif'}
+            </span>
+          </div>
+          <div class="batch-row-actions">
+            <button class="btn btn-ghost btn-sm" onclick="editBatch('${escAttr(b.batch)}')">✏️ Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="askDeleteBatch('${escAttr(b.batch)}')">🗑️ Hapus</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+  }
+
+  let batchDataCache = {};
+
+  async function loadBatchList() {
+    const area = document.getElementById('batchListArea');
+    area.innerHTML = `<div class="loading">Memuat...</div>`;
+    try {
+      const data = await apiGet('/admin/batch-list');
+      batchDataCache = {};
+      (data.batches || []).forEach(b => { batchDataCache[b.batch] = b; });
+      renderBatchList(data.batches || []);
+    } catch (e) {
+      area.innerHTML = `<div class="empty-state" style="color:var(--error)">Gagal memuat: ${escAttr(e.message)}</div>`;
+    }
+  }
+
+  function editBatch(batchKey) {
+    const b = batchDataCache[batchKey];
+    if (!b) return;
+    editingBatch = batchKey;
+    document.getElementById('fBatch').value = batchKey;
+    document.getElementById('fBatch').disabled = true;
+    document.getElementById('fDb').value = b.db || '';
+    document.getElementById('fDirectory').value = b.directory || '';
+    document.getElementById('fHof').value = b.hof || '';
+    document.getElementById('fHofEnabled').checked = !!b.hofEnabled;
+    document.getElementById('formTitle').textContent = `✏️ Edit Batch ${batchKey}`;
+    document.getElementById('submitBtn').textContent = 'Simpan Perubahan';
+    document.getElementById('cancelEditBtn').style.display = 'inline-flex';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function cancelEdit() {
+    editingBatch = null;
+    document.getElementById('batchForm').reset();
+    document.getElementById('fBatch').disabled = false;
+    document.getElementById('formTitle').textContent = '➕ Tambah / Update Batch';
+    document.getElementById('submitBtn').textContent = 'Simpan Batch';
+    document.getElementById('cancelEditBtn').style.display = 'none';
+    const msg = document.getElementById('formMsg');
+    msg.className = 'form-msg'; msg.textContent = '';
+  }
+  document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
+
+  let pendingDeleteBatch = null;
+  function askDeleteBatch(batchKey) {
+    pendingDeleteBatch = batchKey;
+    document.getElementById('deleteModalBatch').textContent = 'Batch ' + batchKey;
+    document.getElementById('deleteModal').classList.add('open');
+  }
+  document.getElementById('deleteCancelBtn').addEventListener('click', () => {
+    pendingDeleteBatch = null;
+    document.getElementById('deleteModal').classList.remove('open');
+  });
+  document.getElementById('deleteConfirmBtn').addEventListener('click', async () => {
+    if (!pendingDeleteBatch) return;
+    const btn = document.getElementById('deleteConfirmBtn');
+    btn.disabled = true; btn.textContent = 'Menghapus...';
+    try {
+      await apiPost('/admin/batch/delete', { batch: pendingDeleteBatch });
+      document.getElementById('deleteModal').classList.remove('open');
+      if (editingBatch === pendingDeleteBatch) cancelEdit();
+      await loadBatchList();
+    } catch (e) {
+      alert('Gagal menghapus: ' + e.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Ya, Hapus';
+      pendingDeleteBatch = null;
+    }
+  });
+
+  document.getElementById('batchForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('formMsg');
+    const submitBtn = document.getElementById('submitBtn');
+
+    const batch = document.getElementById('fBatch').value.trim();
+    const db = document.getElementById('fDb').value.trim();
+    const directory = document.getElementById('fDirectory').value.trim();
+    const hof = document.getElementById('fHof').value.trim();
+    const hofEnabled = document.getElementById('fHofEnabled').checked;
+
+    if (!batch || !db || !directory) {
+      msg.className = 'form-msg err';
+      msg.textContent = 'Nomor batch, Link Database, dan Link Directory wajib diisi.';
+      return;
+    }
+    if (hofEnabled && !hof) {
+      msg.className = 'form-msg err';
+      msg.textContent = 'Centang "Aktifkan Hall of Fame" perlu Link Hall of Fame diisi juga.';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Menyimpan...';
+    msg.className = 'form-msg'; msg.textContent = '';
+
+    try {
+      await apiPost('/admin/batch', { batch, db, directory, hof, hofEnabled });
+      msg.className = 'form-msg ok';
+      msg.textContent = `✓ Batch ${batch} berhasil disimpan. Perubahan aktif dalam ±60 detik.`;
+      cancelEdit();
+      await loadBatchList();
+    } catch (err) {
+      msg.className = 'form-msg err';
+      msg.textContent = '✗ ' + (err.message || 'Gagal menyimpan.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = editingBatch ? 'Simpan Perubahan' : 'Simpan Batch';
+    }
+  });
+
+  async function init() {
+    let session;
+    try {
+      session = await checkLogin();
+    } catch (e) {
+      document.querySelector('.shell').innerHTML = `<div class="empty-state">Gagal verifikasi login. <a href="../../login/">Login ulang</a></div>`;
+      return;
+    }
+    if (!session) return;
+    AUTH_TOKEN = session.token || getStoredToken();
+
+    if (!session.isAdmin) {
+      document.querySelector('.shell').innerHTML = `
+        <div class="empty-state">
+          🔒 Halaman ini khusus Admin.
+          <div style="margin-top:14px"><a href="../../forum/" class="back-link">← Kembali ke Forum</a></div>
+        </div>`;
+      return;
+    }
+
+    await loadBatchList();
+  }
+
+  init();
+</script>
+</body>
+</html>

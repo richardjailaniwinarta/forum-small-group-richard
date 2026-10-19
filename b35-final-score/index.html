@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Score Lookup — Batch 35</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0e11; --surface: #1a1820; --surface2: #221f2b;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.15);
+    --text: #f0eef8; --text2: #9d99b0;
+    --accent: #7f77dd; --accent2: #afa9ec;
+    --green: #1d9e75; --green-light: #5dcaa5;
+    --amber: #ef9f27; --red: #e24b4a;
+    --radius: 12px; --radius-sm: 8px;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0 1rem; }
+  header { width: 100%; max-width: 640px; padding: 3.5rem 0 2rem; text-align: center; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); background: rgba(127,119,221,0.12); border: 0.5px solid rgba(127,119,221,0.3); border-radius: 100px; padding: 4px 14px; margin-bottom: 1.25rem; }
+  h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--text); margin-bottom: 0.75rem; }
+  h1 span { color: var(--accent2); }
+  .subtitle { font-size: 0.95rem; color: var(--text2); line-height: 1.6; }
+  .search-box { width: 100%; max-width: 640px; margin-bottom: 2rem; }
+  .input-wrap { position: relative; display: flex; align-items: center; }
+  .input-icon { position: absolute; left: 18px; width: 20px; height: 20px; color: var(--text2); pointer-events: none; }
+  input[type="text"] { width: 100%; background: var(--surface); border: 0.5px solid var(--border2); border-radius: var(--radius); color: var(--text); font-family: 'DM Mono', monospace; font-size: 1.1rem; padding: 1rem 1rem 1rem 3.2rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; letter-spacing: 0.05em; }
+  input[type="text"]::placeholder { color: var(--text2); opacity: 0.6; font-size: 0.95rem; letter-spacing: 0; }
+  input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(127,119,221,0.18); }
+  .clear-btn { position: absolute; right: 14px; background: none; border: none; color: var(--text2); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: color 0.15s, background 0.15s; opacity: 0; pointer-events: none; }
+  .clear-btn.visible { opacity: 1; pointer-events: all; }
+  .clear-btn:hover { color: var(--text); background: rgba(255,255,255,0.08); }
+  .result-area { width: 100%; max-width: 640px; min-height: 200px; }
+  .state-msg { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 1rem; text-align: center; gap: 0.75rem; }
+  .state-msg svg { opacity: 0.3; margin-bottom: 0.5rem; }
+  .state-msg p { font-size: 0.9rem; color: var(--text2); }
+  .state-msg h3 { font-size: 1rem; font-weight: 600; }
+  .icon-wrap-red { width: 56px; height: 56px; border-radius: 50%; background: rgba(226,75,74,0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; }
+  .spinner-wrap { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 3rem 1rem; }
+  .spinner { width: 32px; height: 32px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .result-card { display: none; background: var(--surface); border: 0.5px solid var(--border2); border-radius: var(--radius); overflow: hidden; animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .card-header { padding: 1.5rem 1.5rem 1.25rem; border-bottom: 0.5px solid var(--border); display: flex; align-items: flex-start; gap: 1rem; }
+  .avatar { width: 52px; height: 52px; min-width: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #534ab7); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+  .card-header-info { flex: 1; min-width: 0; }
+  .student-name { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; margin-bottom: 4px; word-break: break-word; }
+  .student-id { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--text2); letter-spacing: 0.05em; }
+  .card-body { padding: 1.25rem 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .card-body.has-approval { grid-template-columns: 1fr 1fr 1fr; }
+  .metric-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 1rem 1.1rem; position: relative; overflow: hidden; }
+  .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; border-radius: 2px 2px 0 0; }
+  .metric-card.completion::before { background: var(--green); }
+  .metric-card.score::before { background: var(--accent); }
+  .metric-card.approval-approved::before { background: var(--green); }
+  .metric-card.approval-notapproved::before { background: var(--red); }
+  .metric-card.approval-pending::before { background: var(--amber); }
+  .metric-card.approval-minor::before { background: var(--amber); }
+  .metric-card.approval-major::before { background: var(--red); }
+  .metric-card.approval-nosubmission::before { background: var(--text2); }
+  .metric-label { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text2); margin-bottom: 0.5rem; }
+  .metric-value { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+  .metric-card.completion .metric-value { color: var(--green-light); }
+  .metric-card.score .metric-value { color: var(--accent2); }
+  .metric-card.approval-approved .metric-value { color: var(--green-light); }
+  .metric-card.approval-notapproved .metric-value { color: var(--red); }
+  .metric-card.approval-pending .metric-value { color: var(--amber); }
+  .metric-card.approval-minor .metric-value { color: var(--amber); }
+  .metric-card.approval-major .metric-value { color: var(--red); }
+  .metric-card.approval-nosubmission .metric-value { color: var(--text2); }
+  .approval-icon { font-size: 1.5rem; line-height: 1; margin-bottom: 0.4rem; display: block; }
+  .metric-sub { font-size: 0.75rem; color: var(--text2); margin-top: 0.4rem; }
+  .progress-bar-wrap { margin-top: 0.6rem; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.08); overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 2px; background: var(--green); transition: width 0.8s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+  .card-footer { padding: 0.875rem 1.5rem; border-top: 0.5px solid var(--border); display: flex; align-items: center; gap: 0.75rem; }
+  .status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 100px; letter-spacing: 0.02em; }
+  .status-pill.excellent { background: rgba(29,158,117,0.15); color: var(--green-light); border: 0.5px solid rgba(93,202,165,0.25); }
+  .status-pill.good { background: rgba(127,119,221,0.15); color: var(--accent2); border: 0.5px solid rgba(175,169,236,0.25); }
+  .status-pill.warning { background: rgba(239,159,39,0.12); color: var(--amber); border: 0.5px solid rgba(239,159,39,0.25); }
+  .status-pill.danger { background: rgba(226,75,74,0.12); color: var(--red); border: 0.5px solid rgba(226,75,74,0.25); }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .portfolio-link { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--text2); text-decoration: none; padding: 5px 10px; border-radius: 6px; border: 0.5px solid var(--border2); transition: color 0.15s, border-color 0.15s, background 0.15s; }
+  .portfolio-link:hover { color: var(--text); border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); }
+  footer { padding: 2.5rem 1rem; color: var(--text2); font-size: 0.78rem; text-align: center; line-height: 1.6; }
+  @media (max-width: 520px) {
+    .card-body.has-approval { grid-template-columns: 1fr 1fr; }
+    .card-body.has-approval .metric-card:last-child { grid-column: 1 / -1; }
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Batch 35</div>
+  <h1>Student <span>Score</span><br>Lookup</h1>
+  <p class="subtitle">Masukkan Student ID untuk melihat Total Score, Completion Rate, dan Approval Portfolio.</p>
+</header>
+
+<div class="search-box">
+  <div class="input-wrap">
+    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Ketik Student ID kamu..." maxlength="20" autocomplete="off" autocorrect="off" spellcheck="false" disabled>
+    <button class="clear-btn" id="clearBtn" aria-label="Clear input">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<div class="result-area" id="resultArea">
+
+  <div class="spinner-wrap" id="stateLoading">
+    <div class="spinner"></div>
+    <p style="font-size:0.85rem; color:var(--text2);">Memuat data dari CSV…</p>
+  </div>
+
+  <div class="state-msg" id="stateError" style="display:none">
+    <div class="icon-wrap-red">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e24b4a" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+      </svg>
+    </div>
+    <h3>Gagal memuat data</h3>
+    <p id="stateErrorMsg">Pastikan file <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.8rem">data.csv</code> ada di folder yang sama dengan <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.8rem">index.html</code></p>
+  </div>
+
+  <div class="state-msg" id="stateEmpty" style="display:none">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+    <p>Masukkan Student ID untuk melihat hasil scoring kamu.</p>
+  </div>
+
+  <div class="state-msg" id="stateNotFound" style="display:none">
+    <div class="icon-wrap-red">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e24b4a" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/>
+      </svg>
+    </div>
+    <h3>Student ID tidak ditemukan</h3>
+    <p>Periksa kembali ID kamu dan coba lagi.</p>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="card-header">
+      <div class="avatar" id="avatarEl"></div>
+      <div class="card-header-info">
+        <div class="student-name" id="studentName"></div>
+        <div class="student-id" id="studentIdDisplay"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="metric-card completion">
+        <div class="metric-label">% Completion</div>
+        <div class="metric-value" id="completionVal"></div>
+        <div class="metric-sub" id="completionSub"></div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+      </div>
+      <div class="metric-card score">
+        <div class="metric-label">Total Score</div>
+        <div class="metric-value" id="scoreVal"></div>
+        <div class="metric-sub" id="scoreSub"></div>
+      </div>
+      <div class="metric-card approval-pending" id="approvalCard" style="display:none">
+        <div class="metric-label">Portfolio</div>
+        <span class="approval-icon" id="approvalIcon">⏳</span>
+        <div class="metric-value" id="approvalVal" style="font-size:1.1rem;letter-spacing:-0.01em">—</div>
+        <div class="metric-sub" id="approvalSub"></div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="status-pill" id="statusPill">
+        <span class="status-dot"></span>
+        <span id="statusText"></span>
+      </span>
+      <span class="status-pill" id="scorePill">
+        <span class="status-dot"></span>
+        <span id="scoreStatusText"></span>
+      </span>
+      <a class="portfolio-link" id="portfolioLink" href="#" target="_blank" rel="noopener noreferrer" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14.408 14.803h3.585V11.23h-3.585v3.573zm-4.394-3.573H6.429v3.573h3.585V11.23zM24 0v24H0V0h24zM19.664 9.563H4.336v6.505h15.328V9.563z"/></svg>
+        Portfolio
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Made by RJW &nbsp;·&nbsp; <code style="background:var(--surface2);padding:1px 5px;border-radius:4px">@assistby.rjw</code>
+</footer>
+
+<script>
+const BATCH_LEGEND = 'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlNmWUl0a2JCYUh6ME0tRHBVaEVLTnFxYktJQTkyYVdHdEN3U3l6aUhqcXQ2RGhvaFRYblFHRmEtV2hlUFRfb0x6ajdCU2V3YzZlWVNkQi9wdWI/Z2lkPTgzNjU1MDQyNiZzaW5nbGU9dHJ1ZSZvdXRwdXQ9Y3N2';
+const LLVSEGEN = atob(BATCH_LEGEND);
+
+const COL = { id: 0, name: 1, completion: 12, score: 13, approval: 15, portfolio: 16 };
+
+const HEADER_ROW = 1;
+
+let lookup = {};
+let maxScore = 0;
+let currentStudentId = null;
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let cur = '';
+  let inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { cur += '"'; i++; }
+        else { inQ = false; }
+      } else {
+        cur += c;
+      }
+    } else {
+      if (c === '"') { inQ = true; }
+      else if (c === ',') { row.push(cur.trim()); cur = ''; }
+      else if (c === '\r') { }
+      else if (c === '\n') { row.push(cur.trim()); cur = ''; rows.push(row); row = []; }
+      else { cur += c; }
+    }
+  }
+  row.push(cur.trim());
+  rows.push(row);
+  return rows;
+}
+
+async function loadCSV() {
+  try {
+    const res = await fetch(LLVSEGEN);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const rows = parseCSV(text);
+
+    rows.forEach((row, i) => {
+      if (i <= HEADER_ROW) return;
+      const id = (row[COL.id] || '').trim();
+      if (!id) return;
+
+      const scoreNum = parseInt((row[COL.score] || '0').replace(/[^\d]/g, '')) || 0;
+      if (scoreNum > maxScore) maxScore = scoreNum;
+
+      lookup[id] = {
+        id,
+        name:       (row[COL.name] || '').trim(),
+        completion: (row[COL.completion] || '0%').trim(),
+        score:      scoreNum,
+        approval:   (row[COL.approval] || '').trim(),
+        portfolio:   (row[COL.portfolio] || '').trim()
+      };
+    });
+
+    show('stateEmpty');
+    document.getElementById('searchInput').disabled = false;
+    document.getElementById('searchInput').focus();
+
+  } catch (err) {
+    document.getElementById('stateErrorMsg').innerHTML =
+      'Pastikan file <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.8rem">' +
+      LLVSEGEN + '</code> ada di folder yang sama dengan <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.8rem">index.html</code>' +
+      '<br><small style="opacity:0.6">' + err.message + '</small>';
+    show('stateError');
+  }
+}
+
+function show(id) {
+  ['stateLoading','stateError','stateEmpty','stateNotFound','resultCard']
+    .forEach(s => {
+      const el = document.getElementById(s);
+      if (s === 'resultCard') el.style.display = (s === id) ? 'block' : 'none';
+      else el.style.display = (s === id) ? 'flex' : 'none';
+    });
+}
+
+function getInitials(name) {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+function getStatus(pct) {
+  if (isNaN(pct))   return { label: 'Data Belum Tersedia', cls: 'warning' };
+  if (pct >= 100)   return { label: 'Congrat 100% Completion', cls: 'excellent' };
+  if (pct >= 80)    return { label: 'Syarat Terpenuhi',  cls: 'good' };
+  return { label: 'Syarat Belum Terpenuhi', cls: 'warning' };
+}
+
+function getScoreStatus(score) {
+  if (isNaN(score))   return { label: 'Data Belum Tersedia', cls: 'warning' };
+  if (score >= 5400)  return { label: 'Congrat Full Score! 🎉', cls: 'excellent' };
+  return { label: 'Maaf Belum Full Score', cls: 'warning' };
+}
+
+function showResult(student) {
+  currentStudentId = student.id;
+  show('resultCard');
+
+  document.getElementById('resultCard').style.animation = 'none';
+  void document.getElementById('resultCard').offsetWidth;
+  document.getElementById('resultCard').style.animation = '';
+
+  const pct = parseFloat(student.completion);
+  const maxDisplay = 5400;
+
+  document.getElementById('avatarEl').textContent       = getInitials(student.name);
+  document.getElementById('studentName').textContent    = student.name;
+  document.getElementById('studentIdDisplay').textContent = 'ID: ' + student.id;
+  document.getElementById('completionVal').textContent  = student.completion;
+  document.getElementById('completionSub').textContent  = pct >= 100 ? 'Semua Task Sudah Selesai ✓' : 'Belum Semua Tasks Selesai';
+  document.getElementById('scoreVal').textContent       = student.score.toLocaleString('id-ID');
+  document.getElementById('scoreSub').textContent       = 'dari ' + maxDisplay.toLocaleString('id-ID') + ' poin maksimum';
+
+  const fillEl = document.getElementById('progressFill');
+  fillEl.style.width = '0%';
+  setTimeout(() => { fillEl.style.width = pct + '%'; }, 50);
+
+  const status = getStatus(pct);
+  document.getElementById('statusPill').className = 'status-pill ' + status.cls;
+  document.getElementById('statusText').textContent = status.label;
+
+  const scoreStatus = getScoreStatus(student.score);
+  document.getElementById('scorePill').className = 'status-pill ' + scoreStatus.cls;
+  document.getElementById('scoreStatusText').textContent = scoreStatus.label;
+
+  const li = document.getElementById('portfolioLink');
+  if (student.portfolio && student.portfolio.startsWith('http')) {
+    li.href = student.portfolio;
+    li.style.display = 'inline-flex';
+  } else {
+    li.style.display = 'none';
+  }
+
+  const approvalCard = document.getElementById('approvalCard');
+  const approvalVal  = document.getElementById('approvalVal');
+  const approvalSub  = document.getElementById('approvalSub');
+  const approvalIcon = document.getElementById('approvalIcon');
+  const cardBody     = document.querySelector('.card-body');
+
+  const rawApproval = (student.approval || '')
+    .toLowerCase()
+    .replace(/\u00A0/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (rawApproval === '') {
+    approvalCard.style.display = 'none';
+    cardBody.classList.remove('has-approval');
+  } else {
+    approvalCard.style.display = 'block';
+    cardBody.classList.add('has-approval');
+
+    if (rawApproval.includes('no submission') || rawApproval.includes('belum submit')) {
+      approvalCard.className = 'metric-card approval-nosubmission';
+      approvalIcon.textContent = '🚫';
+      approvalVal.textContent  = 'No Submission';
+      approvalSub.textContent  = 'Belum ada submission';
+    } else if (rawApproval.includes('not approved')) {
+      approvalCard.className = 'metric-card approval-notapproved';
+      approvalIcon.textContent = '❌';
+      approvalVal.textContent  = 'Not Approved';
+      approvalSub.textContent  = 'Portfolio belum diterima';
+    } else if (rawApproval.includes('minor')) {
+      approvalCard.className = 'metric-card approval-minor';
+      approvalIcon.textContent = '✏️';
+      approvalVal.textContent  = 'Minor Revision';
+      approvalSub.textContent  = 'Perlu revisi kecil';
+    } else if (rawApproval.includes('major')) {
+      approvalCard.className = 'metric-card approval-major';
+      approvalIcon.textContent = '⚠️';
+      approvalVal.textContent  = 'Major Revision';
+      approvalSub.textContent  = 'Perlu revisi besar';
+    } else if (rawApproval.includes('approved')) {
+      approvalCard.className = 'metric-card approval-approved';
+      approvalIcon.textContent = '✅';
+      approvalVal.textContent  = 'Approved';
+      approvalSub.textContent  = 'Portfolio diterima';
+    } else {
+      approvalCard.className = 'metric-card approval-pending';
+      approvalIcon.textContent = '⏳';
+      approvalVal.textContent  = student.approval;
+      approvalSub.textContent  = 'Menunggu review';
+    }
+  }
+}
+
+const searchInput = document.getElementById('searchInput');
+const clearBtn    = document.getElementById('clearBtn');
+
+let debounceTimer;
+searchInput.addEventListener('input', function() {
+  const val = this.value.trim();
+  clearBtn.classList.toggle('visible', val.length > 0);
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    if (!val) { show('stateEmpty'); return; }
+    const found = lookup[val];
+    if (found) showResult(found);
+    else show('stateNotFound');
+  }, 300);
+});
+
+clearBtn.addEventListener('click', function() {
+  searchInput.value = '';
+  clearBtn.classList.remove('visible');
+  show('stateEmpty');
+  searchInput.focus();
+});
+
+searchInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') { this.value = ''; clearBtn.classList.remove('visible'); show('stateEmpty'); }
+});
+
+loadCSV();
+</script>
+</body>
+</html>
